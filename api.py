@@ -9,6 +9,7 @@ import threading
 from multiprocessing import Process
 
 from run_sim import runSim
+from run_sim import makeTables
 
 
 app = Flask(__name__)
@@ -24,7 +25,9 @@ class Setup(Resource):
     def get(self):
 
         # Create unique UUDI
-        id = str(uuid.uuid4())
+        id = uuid.uuid4()
+
+        makeTables(id)
 
         # TODO add new line to tabe with uuid
         table.put_item(
@@ -32,8 +35,8 @@ class Setup(Resource):
                 'uuid': id
             }
         )
-
-        return {'uuid': id}, 200  # return data and 200 OK code
+        id_str = str(id)
+        return {'uuid': id_str}, 200  # return data and 200 OK code
     pass
 
 

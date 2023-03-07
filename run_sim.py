@@ -1,9 +1,49 @@
 import json
 import subprocess
 import os
+import boto3
 
 
-def runSim():
+def makeTables(uuid):
+    name1 = "wargames"+str(uuid)
+    name2 = "simulated-data-wargames"+str(uuid)
+    dyn_resource = boto3.resource('dynamodb')
+
+    params1 = {
+        'TableName': name1,
+        'KeySchema':[
+            {'AttributeName' : 'SegID', 'KeyType': 'HASH'}
+        ],
+        'AttributeDefinitions':[
+            {'AttributeName': 'SegID', 'AttributeType':'S'}
+        ],
+        'ProvisionedThroughput': {
+            'ReadCapacityUnits': 10,
+            'WriteCapacityUnits': 10
+        }
+    }
+    table = dyn_resource.create_table(**params1)
+    print(f"Creating {name1}...")
+    table.wait_until_exists()
+
+    params2 = {
+        'TableName': name2,
+        'KeySchema':[
+            {'AttributeName' : 'SegID', 'KeyType': 'HASH'}
+        ],
+        'AttributeDefinitions':[
+        {'AttributeName' : 'SegID', 'AttributeType': 'S'},
+        ],
+        'ProvisionedThroughput': {
+            'ReadCapacityUnits': 10,
+            'WriteCapacityUnits': 10
+        }
+    }
+    table2 = dyn_resource.create_table(**params2)
+    print(f"Creating {name2}...")
+    table2.wait_until_exists()
+
+def runSim(uuid):
     config = {
         "Route File": "../Data/Route/WSC/WSC_6000_smoothed_6.csv",
         "Weather File": "../Data/Weather/CA/T35416.csv",
@@ -48,4 +88,4 @@ def runSim():
     # Run the subprocess and retrieve its errors
 
     return subprocess.call(
-        ["./simulator", "simConfig.json"], stderr=subprocess.STDOUT)
+        ["./simulator", "simConfig.json",uuid], stderr=subprocess.STDOUT)
