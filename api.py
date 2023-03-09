@@ -30,11 +30,11 @@ class Setup(Resource):
         makeTables(id)
 
         # TODO add new line to tabe with uuid
-        table.put_item(
-            Item={
-                'uuid': id
-            }
-        )
+        # table.put_item(
+        #     Item={
+        #         'uuid': id
+        #     }
+        # )
         id_str = str(id)
         return {'uuid': id_str}, 200  # return data and 200 OK code
     pass
@@ -76,9 +76,9 @@ class Start(Resource):
         parser.add_argument('uuid', required=True, location='args')
 
         args = parser.parse_args()  # parse arguments to dictionary
-
+        arg_str = str(args['uuid'])
         threads.update({
-            args['uuid']: Process(target=runSim)
+            args['uuid']: Process(target=runSim, args = [arg_str])
         })
         threads[args['uuid']].start()
         return 200  # return data with 200 OK

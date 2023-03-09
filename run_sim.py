@@ -86,6 +86,6 @@ def runSim(uuid):
     os.chdir("./Simulator_v2/build")
 
     # Run the subprocess and retrieve its errors
-
+    uuid_str = str(uuid)
     return subprocess.call(
-        ["./simulator", "simConfig.json",uuid], stderr=subprocess.STDOUT)
+        ["./simulator", "simConfig.json", uuid_str], stderr=subprocess.STDOUT)
